@@ -1,0 +1,1 @@
+cog predict -i 'text="Hey there, this is a test."' -i 'ref_audio_file="https://files.catbox.moe/be6df3.wav"' -i $'ref_audio_transcript="We actually haven\'t managed to meet demand."'
