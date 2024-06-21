@@ -34,7 +34,7 @@ class Predictor(cog.BasePredictor):
 
     def predict(
         self,
-        testMode: bool = cog.Input(
+        testMode: str = cog.Input(
             description="Run in test mode (without inference)", choices=["true", "false"], default="false"),
         text: str = cog.Input(description="Text to synthesize"),
         ref_audio_file: cog.Path = cog.Input(
