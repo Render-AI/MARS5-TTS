@@ -34,11 +34,8 @@ class Predictor(cog.BasePredictor):
         ref_audio_file: cog.Path = cog.Input(
             description='Reference audio file to clone from <= 10 seconds', default="https://files.catbox.moe/be6df3.wav"),
         ref_audio_transcript: str = cog.Input(
-            description='Text in the reference audio file', default="We actually haven't managed to meet demand."),
+            description='Text in the reference audio file', default="We actually haven't managed to meet demand.")
     ) -> str:
-
-        print(f">>>> Ref Audio file: {
-              ref_audio_file}; ref_transcript: {ref_audio_transcript}")
 
         # Load the reference audio
         wav, sr = librosa.load(ref_audio_file, sr=self.mars5.sr, mono=True)
