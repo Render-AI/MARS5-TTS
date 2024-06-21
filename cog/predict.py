@@ -1,5 +1,5 @@
 import cog
-from cog import BasePredictor, Input, Path
+from cog import BaseModel, BasePredictor, Input, Path
 from typing import Dict
 from pathlib import Path
 import tempfile
