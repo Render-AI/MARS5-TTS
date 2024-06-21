@@ -60,5 +60,5 @@ class Predictor(cog.BasePredictor):
         compressed.export("output.mp3")
         output_path = "output.mp3"
 
-        print(f">>>> Output file url: {output_path}")
-        return Path(output_path)
+        print(f">>>> Output: {output_path}")
+        return Path("./output.mp3")
