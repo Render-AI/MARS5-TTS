@@ -1,7 +1,8 @@
 # MARS5: A novel speech model for insane prosody
+
 <div id="top" align="center">
 
-   ![MARS5 Banner](assets/github-banner.png)
+![MARS5 Banner](assets/github-banner.png)
 
    <h3>
    <a href="https://www.loom.com/share/a6e7c6658f9f4b09a696926a98dd6fcc"> Why MARS5? </a> |
@@ -9,17 +10,12 @@
    <a href="https://179c54d254f7.ngrok.app/"> Samples </a> |
    <a href="https://camb.ai/"> Camb AI Website </a></h3>
 
-   [![GitHub Repo stars](https://img.shields.io/github/stars/Camb-ai/MARS5-TTS?style=social)](https://github.com/Camb-ai/MARS5-TTS/stargazers)
-   [![Join our Discord](https://discordapp.com/api/guilds/1107565548864290840/widget.png)](https://discord.gg/FFQNCSKSXX)
-   [![HuggingFace badge](https://img.shields.io/badge/%F0%9F%A4%97HuggingFace-Join-yellow)](https://huggingface.co/CAMB-AI/MARS5-TTS)
-   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Camb-ai/mars5-tts/blob/master/mars5_demo.ipynb)
-
+[![GitHub Repo stars](https://img.shields.io/github/stars/Camb-ai/MARS5-TTS?style=social)](https://github.com/Camb-ai/MARS5-TTS/stargazers)
+[![Join our Discord](https://discordapp.com/api/guilds/1107565548864290840/widget.png)](https://discord.gg/FFQNCSKSXX)
+[![HuggingFace badge](https://img.shields.io/badge/%F0%9F%A4%97HuggingFace-Join-yellow)](https://huggingface.co/CAMB-AI/MARS5-TTS)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Camb-ai/mars5-tts/blob/master/mars5_demo.ipynb)
 
 </div>
-
-
-
-
 
 # Approach
 
@@ -29,11 +25,7 @@ The model follows a two-stage AR-NAR pipeline with a distinctively novel NAR com
 
 With just 5 seconds of audio and a snippet of text, MARS5 can generate speech even for prosodically hard and diverse scenarios like sports commentary, anime and more. Check out our demo:
 
-
-
-
 https://github.com/Camb-ai/MARS5-TTS/assets/23717819/3e191508-e03c-4ff9-9b02-d73ae0ebefdd
-
 
 Watch full video here: [![Youtube](https://img.shields.io/badge/YouTube-red)](https://www.youtube.com/watch?v=bmJSLPYrKtE)
 
@@ -57,22 +49,21 @@ For more details on this and other performance and model details, please see the
 - Sample page with a few hard prosodic samples: [https://camb-ai.github.io/MARS5-TTS/](https://camb-ai.github.io/MARS5-TTS/)
 - Online demo: [here](https://179c54d254f7.ngrok.app/)
 
-
 ## Quickstart
-
 
 We use `torch.hub` to make loading the model easy -- no cloning of the repo needed. The steps to perform inference are simple:
 
 1. **Installation using pip**:
 
-    Requirements:
-    - Python >= 3.10
-    - Torch >= 2.0
-    - Torchaudio
-    - Librosa
-    - Vocos
-    - Encodec
-    - safetensors
+   Requirements:
+
+   - Python >= 3.10
+   - Torch >= 2.0
+   - Torchaudio
+   - Librosa
+   - Vocos
+   - Encodec
+   - safetensors
 
 ```bash
 pip install --upgrade torch torchaudio librosa vocos encodec safetensors
@@ -89,13 +80,13 @@ mars5, config_class = torch.hub.load('Camb-ai/mars5-tts', 'mars5_english', trust
 ```
 
 (Optional) Load Model from huggingface (make sure repository is cloned)
+
 ```python
 from inference import Mars5TTS, InferenceConfig as config_class
 import torch, librosa
 
 mars5 = Mars5TTS.from_pretrained("CAMB-AI/MARS5-TTS")
 ```
-
 
 3. **Pick a reference** and optionally its transcript:
 
@@ -107,7 +98,7 @@ wav = torch.from_numpy(wav)
 ref_transcript = "<transcript of the reference audio>"
 ```
 
-*Note: The reference transcript is optional. Pass it if you wish to do a deep clone.*
+_Note: The reference transcript is optional. Pass it if you wish to do a deep clone._
 
 MARS5 supports 2 kinds of inference: a shallow, fast inference whereby you do not need the transcript of the reference (we call this a _shallow clone_), and a second slower, but typically higher quality way, which we call a _deep clone_.
 To use the deep clone, you need the prompt transcript. See the [model architecture](docs/architecture.md) for more info on this.
@@ -130,28 +121,25 @@ ar_codes, output_audio = mars5.tts("The quick brown rat.", wav,
 **That's it!** These default settings provide pretty good results, but feel free to tune the inference settings to optimize the output for your particular usecase. See the [`InferenceConfig`](inference.py) code or the demo notebook for info and docs on all the different inference settings.
 
 _Some tips for best quality:_
+
 - Make sure reference audio is clean and between 1 second and 12 seconds.
 - Use deep clone and provide an accurate transcript for the reference.
 - Use proper punctuation -- the model can be guided and made better or worse with proper use of punctuation and capitalization.
 
-## Or Use Docker
+## Cog
 
-**Pull from DockerHub**
+There is a [Replicate Demo](https://replicate.com/camb-ai/mars5-tts) at https://replicate.com/camb-ai/mars5-tts
 
-You can directly pull the docker image from our [DockerHub page](https://hub.docker.com/r/cambai/mars5ttsimage).
+Replicate uses [Cog](https://cog.run/) to manage dependencies and deploy ML models as Docker images.
 
+To run locally, clone the repo, then change directory via `cd cog`, and run:
 
-**Build On Your Own**
-
-You can build a custom image from the provided Dockerfile in this repo by running the following command.
-
-```bash
-cd MARS5-TTS
-docker build -t mars5ttsimage ./docker
 ```
-
-
-*Note: This image should be used as a base image on top of which you can add your custom inference script in a Dockerfile or docker-compose. Images that directly generate output will be added to Docker Hub and as Dockerfiles in this repo soon*
+cog predict 
+-i 'text="Hey there, this is a test."' 
+-i 'ref_audio_file="https://files.catbox.moe/be6df3.wav"' 
+-i $'ref_audio_transcript="We actually haven\'t managed to meet demand."'
+```
 
 ## Model Details
 
@@ -182,8 +170,8 @@ If you do not have the necessary hardware requirements and just want to use MARS
 MARS5 is not perfect at the moment, and we are working on improving its quality, stability, and performance.
 Rough areas we are looking to improve, and welcome any contributions in:
 
-- Improving inference stability and consistency 
-- Speed/performance optimizations 
+- Improving inference stability and consistency
+- Speed/performance optimizations
 - Improving reference audio selection when given long references.
 - Benchmark performance numbers for MARS5 on standard speech datasets.
 
@@ -197,7 +185,6 @@ Rough areas we are looking to improve, and welcome any contributions in:
 - [ ] Perform a search (e.g. beam or grid) on the autoregressive sampling settings to find the setting preset which give the best quality.
 
 If you would like to contribute any improvement to MARS5, please feel free to contribute (guidelines below).
-
 
 ## Contributions
 
@@ -224,12 +211,10 @@ We're an ambitious team, globally distributed, with a singular aim of making eve
 
 We're actively hiring; please drop us an email at ack@camb.ai if you're interested. Visit our [careers page](https://www.camb.ai/careers) for more info.
 
-
 ## Community
 
 Join CAMB.AI community on [Forum](https://github.com/Camb-ai/MARS5-TTS/discussions) and
 [Discord](https://discord.gg/FFQNCSKSXX) to share any suggestions, feedback, or questions with our team.
-
 
 ## Acknowledgements
 

@@ -1,4 +1,4 @@
-from cog import BasePredictor, Input, Path
+import cog
 from typing import Dict
 from pathlib import Path
 import tempfile
@@ -8,22 +8,31 @@ import librosa
 import subprocess
 import os
 import soundfile as sf
-from pyupload.main import CatboxUploader
 from scipy.io.wavfile import write as write_wav
 
 SAMPLE_RATE = 16000
+device = "cpu"
+if torch.cuda.is_available():
+    device = "cuda"
+elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+    device = "mps"  
+print(f"Mars5 device: {device}")
+filePath = '/tmp/output.wav'
 
-# TODO: Replicate is unable to parse & render if we return plain Audio, hence used this method of temporary output url, see if it can resolve        
-class Predictor(BasePredictor):
+class Predictor(cog.BasePredictor):
     def setup(self):
-        self.mars5, self.config_class = torch.hub.load('Camb-ai/mars5-tts', 'mars5_english', trust_repo=True)
+        self.mars5, self.config_class = torch.hub.load('Camb-ai/mars5-tts', 'mars5_english',  device=device, trust_repo=True)
         print(">>>>> Model Loaded")
 
     def predict(
         self,
-        text: str = Input(description="Text to synthesize"),
-        ref_audio_file: Path = Input(description='Reference audio file to clone from <= 10 seconds', default="https://files.catbox.moe/be6df3.wav"),
-        ref_audio_transcript: str = Input(description='Text in the reference audio file', default="We actually haven't managed to meet demand."),
+        text: str = cog.Input(description="Text to synthesize"),
+        ref_audio_file: cog.Path = cog.Input(description='Reference audio file to clone from <= 10 seconds', default="https://files.catbox.moe/be6df3.wav"),
+        ref_audio_transcript: str = cog.Input(description='Text in the reference audio file', default="We actually haven't managed to meet demand."),
+        output_format: str = cog.Input(
+            description="Output format",
+            choices=["wav", "mp3"],
+            default="mp3"),
     ) -> str:
         
         print(f">>>> Ref Audio file: {ref_audio_file}; ref_transcript: {ref_audio_transcript}")
@@ -41,9 +50,16 @@ class Predictor(BasePredictor):
         ar_codes, wav_out = self.mars5.tts(text, wav, ref_audio_transcript, cfg=cfg)
         print(f">>>>> Done with inference")
         
-        output_path = "/tmp/aud.mp3"
+        output_path = "/tmp/output.wav"
         write_wav(output_path, self.mars5.sr, wav_out.numpy())
+
+        # now convert the file stored at output_path to mp3 
         
-        output_file_url = CatboxUploader(output_path).execute()
-        print(f">>>> Output file url: {output_file_url}")
-        return output_file_url
+        if output_format == 'mp3':
+            from pydub import AudioSegment
+            compressed = AudioSegment.from_wav(output_path)
+            compressed.export("output.mp3")
+            output_path = "output.mp3"
+    
+        print(f">>>> Output file url: {output_path}")
+        return cog.Path(output_path)
