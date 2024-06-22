@@ -21,6 +21,10 @@ elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
 print(f"Mars5 device: {device}")
 
 
+class ModelOutput(BaseModel):    
+    output: Path
+
+
 class Predictor(cog.BasePredictor):
     def setup(self):
         self.mars5, self.config_class = torch.hub.load(
@@ -63,4 +67,4 @@ class Predictor(cog.BasePredictor):
         if (testMode == 'true'):
             output = 'voice_sample.wav'
 
-        return File(output)
+        return ModelOutput(output=Path(output))
