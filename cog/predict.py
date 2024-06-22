@@ -19,12 +19,6 @@ if torch.cuda.is_available():
 elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
     device = "mps"
 print(f"Mars5 device: {device}")
-filePath = '/tmp/output.wav'
-output_path = "/tmp/output.wav"
-
-
-class ModelOutput(BaseModel):
-    audio_out: Path
 
 
 class Predictor(cog.BasePredictor):
@@ -42,7 +36,7 @@ class Predictor(cog.BasePredictor):
             description='Reference audio file to clone from <= 10 seconds', default="https://files.catbox.moe/be6df3.wav"),
         ref_audio_transcript: str = cog.Input(
             description='Text in the reference audio file', default="We actually haven't managed to meet demand.")
-    ) -> ModelOutput:
+    ) -> Path:
 
         if (testMode == 'false'):
             # Load the reference audio
@@ -60,13 +54,10 @@ class Predictor(cog.BasePredictor):
                 text, wav, ref_audio_transcript, cfg=cfg)
             print(f">>>>> Done with inference")
 
-            write_wav(output_path, self.mars5.sr, wav_out.numpy())
+            write_wav('output.wav', self.mars5.sr, wav_out.numpy())
 
             # now convert the file stored at output_path to mp3
-            compressed = AudioSegment.from_wav(output_path)
+            compressed = AudioSegment.from_wav('output.wav')
             compressed.export("output.mp3")
-            output_path = "output.mp3"
 
-        # print(f">>>> Output: {output_path}")
-        # return Path("./output.mp3") # doesn't work
-        return ModelOutput(audio_out=Path('/output.mp3'))
+        return Path('output.mp3')
