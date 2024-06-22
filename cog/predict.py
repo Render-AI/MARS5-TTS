@@ -35,7 +35,7 @@ class Predictor(cog.BasePredictor):
         ref_audio_file: cog.Path = cog.Input(
             description='Reference audio file to clone from <= 10 seconds', default="https://www.renderai.com/audio/examples/bob-example-1.mp3"),
         ref_audio_transcript: str = cog.Input(
-            description='Text in the reference audio file', default="We actually haven't managed to meet demand.")
+            description='Text in the reference audio file', default="Space: the final frontier. These are the voyages of the starship enterprise. It's five year misssion: to explore strange new worlds; to seek out new life and new civilizations; to boldly go where no man has gone before.")
     ) -> Path:
 
         if (testMode == 'false'):
