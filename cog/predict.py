@@ -20,7 +20,7 @@ elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
     device = "mps"
 print(f"Mars5 device: {device}")
 filePath = '/tmp/output.wav'
-
+output_path = "/tmp/output.wav"
 
 class ModelOutput(BaseModel):
     audio_out: Path
@@ -58,8 +58,7 @@ class Predictor(cog.BasePredictor):
             ar_codes, wav_out = self.mars5.tts(
                 text, wav, ref_audio_transcript, cfg=cfg)
             print(f">>>>> Done with inference")
-
-            output_path = "/tmp/output.wav"
+            
             write_wav(output_path, self.mars5.sr, wav_out.numpy())
 
             # now convert the file stored at output_path to mp3
