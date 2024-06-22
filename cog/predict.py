@@ -59,5 +59,8 @@ class Predictor(cog.BasePredictor):
             # now convert the file stored at output_path to mp3
             compressed = AudioSegment.from_wav('output.wav')
             compressed.export("output.mp3")
+            output = 'output.mp3'
+        if (testMode == 'false'):
+            output = 'voice_sample.wav'
 
-        return Path('output.mp3')
+        return Path(output)
