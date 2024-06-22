@@ -33,7 +33,7 @@ class Predictor(cog.BasePredictor):
             description="Run in test mode (without inference)", choices=["true", "false"], default="false"),
         text: str = cog.Input(description="Text to synthesize"),
         ref_audio_file: cog.Path = cog.Input(
-            description='Reference audio file to clone from <= 10 seconds', default="voice_sample.wav"),
+            description='Reference audio file to clone from <= 10 seconds', default="https://www.renderai.com/audio/examples/bob-example-1.mp3"),
         ref_audio_transcript: str = cog.Input(
             description='Text in the reference audio file', default="We actually haven't managed to meet demand.")
     ) -> Path:
