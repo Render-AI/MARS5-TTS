@@ -22,6 +22,7 @@ print(f"Mars5 device: {device}")
 filePath = '/tmp/output.wav'
 output_path = "/tmp/output.wav"
 
+
 class ModelOutput(BaseModel):
     audio_out: Path
 
@@ -41,7 +42,7 @@ class Predictor(cog.BasePredictor):
             description='Reference audio file to clone from <= 10 seconds', default="https://files.catbox.moe/be6df3.wav"),
         ref_audio_transcript: str = cog.Input(
             description='Text in the reference audio file', default="We actually haven't managed to meet demand.")
-    ) -> str:
+    ) -> ModelOutput:
 
         if (testMode == 'false'):
             # Load the reference audio
@@ -58,7 +59,7 @@ class Predictor(cog.BasePredictor):
             ar_codes, wav_out = self.mars5.tts(
                 text, wav, ref_audio_transcript, cfg=cfg)
             print(f">>>>> Done with inference")
-            
+
             write_wav(output_path, self.mars5.sr, wav_out.numpy())
 
             # now convert the file stored at output_path to mp3
