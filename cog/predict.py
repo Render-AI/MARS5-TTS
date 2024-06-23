@@ -62,4 +62,4 @@ class Predictor(cog.BasePredictor):
         if (testMode == 'true'):
             output = 'voice_sample.wav'
 
-        return File(output)
+        return output
