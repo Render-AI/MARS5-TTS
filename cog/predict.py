@@ -22,7 +22,7 @@ print(f"Mars5 device: {device}")
 
 
 class ModelOutput(BaseModel):    
-    output: Path
+    output: File
 
 
 class Predictor(cog.BasePredictor):
@@ -67,4 +67,4 @@ class Predictor(cog.BasePredictor):
         if (testMode == 'true'):
             output = 'voice_sample.wav'
 
-        return ModelOutput(output=Path(output))
+        return ModelOutput(output=File(output))
