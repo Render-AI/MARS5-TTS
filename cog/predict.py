@@ -64,6 +64,6 @@ class Predictor(cog.BasePredictor):
             compressed.export(mp3_output_path)
             output = mp3_output_path
         if (testMode == 'true'):
-            output = Path(os.getcwd() + "voice_sample.wav")            
+            output = Path(os.getcwd() + "/voice_sample.wav")            
 
         return Path(output)
