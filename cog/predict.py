@@ -54,13 +54,16 @@ class Predictor(cog.BasePredictor):
                 text, wav, ref_audio_transcript, cfg=cfg)
             print(f">>>>> Done with inference")
 
-            write_wav('output.wav', self.mars5.sr, wav_out.numpy())
+            output_path = Path(tempfile.mkdtemp()) / "output.wav"
+            mp3_output_path = Path(tempfile.mkdtemp()) / "output.mp3"
+
+            write_wav(output_path, self.mars5.sr, wav_out.numpy())
 
             # now convert the file stored at output_path to mp3
-            compressed = AudioSegment.from_wav('output.wav')
-            compressed.export("output.mp3")
-            output = 'output.mp3'
+            compressed = AudioSegment.from_wav(output_path)
+            compressed.export(mp3_output_path)
+            output = mp3_output_path
         if (testMode == 'true'):
-            output = 'voice_sample.wav'
+            output = Path(os.getcwd() + "voice_sample.wav")            
 
         return Path(output)
