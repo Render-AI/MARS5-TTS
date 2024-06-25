@@ -28,9 +28,8 @@ class Predictor(cog.BasePredictor):
         print(">>>>> Model Loaded")
 
     def predict(
-        self,
-        # testMode: str = cog.Input(description="Run in test mode (without inference)", choices=["true", "false"], default="false"),
-        rep_penalty_window: float = Input(
+        self,        
+        rep_penalty_window: int = Input(
             default=95,
         ),
         temperature:  float = Input(
@@ -38,7 +37,7 @@ class Predictor(cog.BasePredictor):
             le=5,  # LE = max value (Less than, or Equal to)
             default=0.5,
         ),
-        freq_penalty:  float = Input(
+        freq_penalty:  int = Input(
             default=3,
         ),
         top_k:  int = Input(
@@ -53,33 +52,31 @@ class Predictor(cog.BasePredictor):
         ref_audio_transcript: str = cog.Input(
             description='Text in the reference audio file', default="Hi there. I'm your new voice clone. Try your best to upload quality audio.")
     ) -> cog.Path:
+        
+        # Load the reference audio
+        wav, sr = librosa.load(ref_audio_file, sr=self.mars5.sr, mono=True)
+        wav = torch.from_numpy(wav)
 
-        if (testMode == 'false'):
-            # Load the reference audio
-            wav, sr = librosa.load(ref_audio_file, sr=self.mars5.sr, mono=True)
-            wav = torch.from_numpy(wav)
+        # configuration for the TTS model
+        deep_clone = True
+        cfg = self.config_class(
+            deep_clone=deep_clone, rep_penalty_window=rep_penalty_window, top_k=top_k, temperature=temperature, freq_penalty=freq_penalty)
 
-            # configuration for the TTS model
-            deep_clone = True
-            cfg = self.config_class(
-                deep_clone=deep_clone, rep_penalty_window=rep_penalty_window, top_k=top_k, temperature=temperature, freq_penalty=freq_penalty)
+        # Generate the synthesized audio
+        print(f">>> Running inference")
+        ar_codes, wav_out = self.mars5.tts(
+            text, wav, ref_audio_transcript, cfg=cfg)
+        print(f">>>>> Done with inference")
 
-            # Generate the synthesized audio
-            print(f">>> Running inference")
-            ar_codes, wav_out = self.mars5.tts(
-                text, wav, ref_audio_transcript, cfg=cfg)
-            print(f">>>>> Done with inference")
+        output_path = Path(tempfile.mkdtemp()) / "output.wav"
+        mp3_output_path = Path(tempfile.mkdtemp()) / "output.mp3"
 
-            output_path = Path(tempfile.mkdtemp()) / "output.wav"
-            mp3_output_path = Path(tempfile.mkdtemp()) / "output.mp3"
+        write_wav(output_path, self.mars5.sr, wav_out.numpy())
 
-            write_wav(output_path, self.mars5.sr, wav_out.numpy())
-
-            # now convert the file stored at output_path to mp3
-            compressed = AudioSegment.from_wav(output_path)
-            compressed.export(mp3_output_path)
-            output = mp3_output_path
-        if (testMode == 'true'):
-            output = Path(os.getcwd() + "/voice_sample.wav")
+        # now convert the file stored at output_path to mp3
+        compressed = AudioSegment.from_wav(output_path)
+        compressed.export(mp3_output_path)
+        output = mp3_output_path
+     
 
         return cog.Path(output)
