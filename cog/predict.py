@@ -29,9 +29,25 @@ class Predictor(cog.BasePredictor):
 
     def predict(
         self,
-        testMode: str = cog.Input(
-            description="Run in test mode (without inference)", choices=["true", "false"], default="false"),
-        text: str = cog.Input(description="Text to synthesize", default="Hi there, I'm your new voice clone, powered by Mars5."),
+        # testMode: str = cog.Input(description="Run in test mode (without inference)", choices=["true", "false"], default="false"),
+        rep_penalty_window: float = Input(
+            default=95,
+        ),
+        temperature:  float = Input(
+            ge=0,  # GE = min value (Greater than, or Equal to)
+            le=5,  # LE = max value (Less than, or Equal to)
+            default=0.5,
+        ),
+        freq_penalty:  float = Input(
+            default=3,
+        ),
+        top_k:  int = Input(
+            ge=0,  # GE = min value (Greater than, or Equal to)
+            le=100,  # LE = max value (Less than, or Equal to)
+            default=95,
+        ),
+        text: str = cog.Input(description="Text to synthesize",
+                              default="Hi there, I'm your new voice clone, powered by Mars5."),
         ref_audio_file: cog.Path = cog.Input(
             description='Reference audio file to clone from <= 10 seconds', default="https://replicate.delivery/pbxt/L9a6SelzU0B2DIWeNpkNR0CKForWSbkswoUP69L0NLjLswVV/voice_sample.wav"),
         ref_audio_transcript: str = cog.Input(
@@ -46,7 +62,7 @@ class Predictor(cog.BasePredictor):
             # configuration for the TTS model
             deep_clone = True
             cfg = self.config_class(
-                deep_clone=deep_clone, rep_penalty_window=100, top_k=100, temperature=0.7, freq_penalty=3)
+                deep_clone=deep_clone, rep_penalty_window=rep_penalty_window, top_k=top_k, temperature=temperature, freq_penalty=freq_penalty)
 
             # Generate the synthesized audio
             print(f">>> Running inference")
@@ -64,6 +80,6 @@ class Predictor(cog.BasePredictor):
             compressed.export(mp3_output_path)
             output = mp3_output_path
         if (testMode == 'true'):
-            output = Path(os.getcwd() + "/voice_sample.wav")            
+            output = Path(os.getcwd() + "/voice_sample.wav")
 
         return cog.Path(output)
